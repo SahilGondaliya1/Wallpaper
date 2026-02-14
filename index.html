@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Year Flow</title>
+
+<style>
+:root {
+  --bg: #0b0620;
+  --text: #ffffff;
+  --muted: #888;
+  --active: #7c5cff;
+  --today: #ffd000;
+  --empty: #1a1435;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+h1 {
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+.sub {
+  color: var(--muted);
+  margin-top: 6px;
+  font-size: 0.9rem;
+}
+
+/* GRID */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(31, 14px);
+  gap: 8px;
+  margin: 50px 0;
+}
+
+.box {
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  background: var(--empty);
+  transition: all 0.4s ease;
+}
+
+.box.active {
+  background: var(--active);
+  opacity: 0.85;
+}
+
+.box.today {
+  background: var(--today);
+  box-shadow: 0 0 20px var(--today);
+  transform: scale(1.4);
+}
+
+/* BIG TIMER */
+.timer {
+  font-size: clamp(2rem, 6vw, 5rem);
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.ms {
+  font-size: clamp(1rem, 3vw, 2rem);
+  opacity: 0.6;
+  margin-left: 6px;
+}
+
+.label {
+  color: var(--muted);
+  margin-top: 10px;
+  font-size: 0.9rem;
+}
+</style>
+</head>
+<body>
+
+<h1 id="dayText"></h1>
+<div class="sub" id="yearLabel"></div>
+
+<div class="grid" id="grid"></div>
+
+<div>
+  <span class="timer" id="timer"></span>
+  <span class="ms" id="milliseconds"></span>
+  <div class="label" id="countdownLabel"></div>
+</div>
+
+<script>
+function pad(num, size) {
+  return String(num).padStart(size, '0');
+}
+
+function isLeapYear(year) {
+  return new Date(year, 1, 29).getMonth() === 1;
+}
+
+function getDayOfYear(date) {
+  const start = new Date(date.getFullYear(), 0, 0);
+  return Math.floor((date - start) / (1000 * 60 * 60 * 24));
+}
+
+function buildGrid(totalDays) {
+  const grid = document.getElementById("grid");
+  grid.innerHTML = "";
+  for (let i = 1; i <= totalDays; i++) {
+    const div = document.createElement("div");
+    div.classList.add("box");
+    grid.appendChild(div);
+  }
+}
+
+let currentGridYear = null;
+
+function update() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const totalDays = isLeapYear(year) ? 366 : 365;
+  const day = getDayOfYear(now);
+
+  // Rebuild grid if year changes
+  if (currentGridYear !== year) {
+    buildGrid(totalDays);
+    currentGridYear = year;
+  }
+
+  document.getElementById("dayText").innerText =
+    `Day ${day} of ${totalDays}`;
+
+  document.getElementById("yearLabel").innerText =
+    `${year} in progress`;
+
+  const boxes = document.querySelectorAll(".box");
+  boxes.forEach((box, index) => {
+    box.classList.remove("active", "today");
+    if (index + 1 < day) box.classList.add("active");
+    if (index + 1 === day) box.classList.add("today");
+  });
+
+  // Countdown to next Jan 1 automatically
+  const nextYear = year + 1;
+  const target = new Date(`January 1, ${nextYear} 00:00:00`);
+  const diff = target - now;
+
+  const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
+  const m = Math.floor((diff / (1000 * 60)) % 60);
+  const s = Math.floor((diff / 1000) % 60);
+  const ms = diff % 1000;
+
+  document.getElementById("timer").innerText =
+    `${pad(d,3)}d ${pad(h,2)}h ${pad(m,2)}m ${pad(s,2)}s`;
+
+  document.getElementById("milliseconds").innerText =
+    `.${pad(ms,3)}`;
+
+  document.getElementById("countdownLabel").innerText =
+    `Until January 1, ${nextYear}`;
+}
+
+function animate() {
+  update();
+  requestAnimationFrame(animate);
+}
+
+animate();
+</script>
+
+</body>
+</html>
