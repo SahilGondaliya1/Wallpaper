@@ -1,21 +1,30 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Temporal Interface</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Temporal Interface</title>
 
+   <!-- v6 Responsive -->
 <style>
 :root {
-  --bg1: #05010f;
-  --bg2: #0d0225;
-  --neon: #8b5cf6;
-  --neon-soft: rgba(139, 92, 246, 0.4);
-  --today: #00f5ff;
-  --empty: rgba(255,255,255,0.05);
-  --text: #ffffff;
-  --muted: rgba(255,255,255,0.5);
+  --bg1: #0e0f12;
+  --bg2: #16181d;
+
+  --neon: #ffffff;
+  --neon-soft: rgba(255, 255, 255, 0.235);
+
+  --today: #d65e03;
+
+  --empty: rgba(255, 255, 255, 0.06);
+
+  --text: #f9fafb;
+  --muted: rgba(255, 255, 255, 0.45);
 }
+
+
+
+/* ---------------- Base ---------------- */
 
 * {
   margin: 0;
@@ -24,179 +33,338 @@
   font-family: "Segoe UI", sans-serif;
 }
 
+html,
 body {
-  background: linear-gradient(-45deg, var(--bg1), var(--bg2), #12003a, #000000);
-  background-size: 400% 400%;
-  animation: bgShift 15s ease infinite;
+  height: 100%;
+  overflow: hidden; /* Kill scroll */
+}
+
+body {
+  background: linear-gradient(180deg, var(--bg1), var(--bg2));
   color: var(--text);
+
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: space-evenly;
+
   min-height: 100vh;
+
   text-align: center;
-  overflow-x: hidden;
+
+  padding: clamp(1rem, 2vh, 2rem);
 }
 
-@keyframes bgShift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
+
+
+/* ---------------- Title ---------------- */
 
 h1 {
-  font-weight: 500;
-  letter-spacing: 2px;
+  font-weight: 400;
+  letter-spacing: 1.2px;
+  font-size: clamp(1.3rem, 2vw, 2rem);
 }
 
 .sub {
-  margin-top: 8px;
-  font-size: 0.8rem;
+  margin-top: 6px;
+  font-size: clamp(0.65rem, 0.8vw, 0.75rem);
   color: var(--muted);
-  letter-spacing: 3px;
-  text-transform: uppercase;
+  letter-spacing: 2px;
 }
 
-/* GRID */
-.grid {
-  display: grid;
-  grid-template-columns: repeat(31, 12px);
-  gap: 8px;
-  margin: 60px 0;
-}
 
-.box {
-  width: 12px;
-  height: 12px;
-  border-radius: 3px;
-  background: var(--empty);
-  transition: all 0.4s ease;
-}
 
-.box.active {
-  background: var(--neon);
-  box-shadow: 0 0 8px var(--neon-soft);
-}
+/* ---------------- Timer ---------------- */
 
-.box.today {
-  background: var(--today);
-  box-shadow: 0 0 18px var(--today);
-  transform: scale(1.6);
-}
-
-/* BIG TIMER */
 .timer {
-  font-size: clamp(2.5rem, 7vw, 6rem);
-  font-weight: 700;
-  letter-spacing: 4px;
-  text-shadow: 0 0 15px var(--neon);
+  font-size: clamp(2.2rem, 6vw, 5rem);
+  font-weight: 500;
+  letter-spacing: 2px;
+
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.05);
 }
 
 .ms {
-  font-size: clamp(1rem, 3vw, 2rem);
-  margin-left: 8px;
+  font-size: clamp(0.9rem, 2vw, 1.6rem);
+  margin-left: 6px;
   color: var(--muted);
 }
 
 .label {
-  margin-top: 12px;
-  font-size: 0.8rem;
+  margin-top: 6px;
+  font-size: 0.65rem;
   letter-spacing: 2px;
   color: var(--muted);
-  text-transform: uppercase;
+}
+
+
+
+/* ---------------- Day Progress ---------------- */
+
+#day-progress-container {
+  width: min(70vw, 700px);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  gap: 0.3rem;
+}
+
+#day-label {
+  font-size: 0.65rem;
+  letter-spacing: 2px;
+  color: var(--muted);
+}
+
+
+
+/* Bar */
+
+#day-bar {
+  width: 100%;
+  height: clamp(0.7rem, 1.5vh, 1rem);
+
+  display: grid;
+  grid-template-columns: repeat(24, 1fr);
+
+  gap: 0.12rem;
+  padding: 2px;
+
+  background: rgba(255, 255, 255, 0.035);
+
+  border-radius: 0.45rem;
+
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.05),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.4);
+
+  overflow: hidden;
+}
+
+
+
+/* Segments */
+
+.hour-slot {
+  background: rgba(255, 255, 255, 0.08);
+
+  border-radius: 0.18rem;
+
+  position: relative;
+
+  overflow: hidden;
+}
+
+
+
+/* Fill */
+
+.hour-slot-fill {
+  position: absolute;
+  bottom: 0;
+
+  width: 100%;
+  height: 0%;
+
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.95),
+    rgba(255, 255, 255, 0.75)
+  );
+
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.25);
+
+  transition:
+    height 0.35s linear,
+    filter 0.3s ease;
+}
+
+
+
+/* Pulse */
+
+.hour-slot-fill:not([style*="100%"]) {
+  animation: pulse 3s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%   { filter: brightness(1); }
+  50%  { filter: brightness(1.25); }
+  100% { filter: brightness(1); }
+}
+
+
+
+/* ---------------- Grid ---------------- */
+
+.grid {
+  display: grid;
+
+  grid-template-columns: repeat(31, 1fr);
+
+  gap: clamp(4px, 0.8vw, 10px);
+
+  width: min(80vw, 520px);
+
+  margin: clamp(0.8rem, 2vh, 1.5rem) 0;
+}
+
+.box {
+  aspect-ratio: 1 / 1;
+
+  border-radius: 2px;
+
+  background: var(--empty);
+
+  transition:
+    transform 0.25s ease,
+    background 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.box.active {
+  background: var(--neon);
+  box-shadow: 0 0 6px var(--neon-soft);
+}
+
+.box.today {
+  background: var(--today);
+  transform: scale(1.25);
 }
 </style>
-</head>
-<body>
 
-<h1 id="dayText"></h1>
-<div class="sub" id="yearLabel"></div>
+  </head>
+  <body>
+    <div>
+      <span class="timer" id="timer"></span>
+      <span class="ms" id="milliseconds"></span>
+      <div class="label" id="countdownLabel"></div>
+    </div>
 
-<div class="grid" id="grid"></div>
+    <div class="grid" id="grid"></div>
 
-<div>
-  <span class="timer" id="timer"></span>
-  <span class="ms" id="milliseconds"></span>
-  <div class="label" id="countdownLabel"></div>
-</div>
+    <!-- Day Progress Bar -->
+    <div id="day-progress-container">
+      <div id="day-label">DAY</div>
+      <div id="day-bar"></div>
+    </div>
 
-<script>
-function pad(num, size) {
-  return String(num).padStart(size, '0');
-}
+    <h1 id="dayText"></h1>
+    <div class="sub" id="yearLabel"></div>
 
-function isLeapYear(year) {
-  return new Date(year, 1, 29).getMonth() === 1;
-}
+    <script>
+      function pad(num, size) {
+        return String(num).padStart(size, "0");
+      }
 
-function getDayOfYear(date) {
-  const start = new Date(date.getFullYear(), 0, 0);
-  return Math.floor((date - start) / (1000 * 60 * 60 * 24));
-}
+      function isLeapYear(year) {
+        return new Date(year, 1, 29).getMonth() === 1;
+      }
 
-function buildGrid(totalDays) {
-  const grid = document.getElementById("grid");
-  grid.innerHTML = "";
-  for (let i = 1; i <= totalDays; i++) {
-    const div = document.createElement("div");
-    div.classList.add("box");
-    grid.appendChild(div);
-  }
-}
+      function getDayOfYear(date) {
+        const start = new Date(date.getFullYear(), 0, 0);
+        return Math.floor((date - start) / (1000 * 60 * 60 * 24));
+      }
 
-let currentGridYear = null;
+      function buildGrid(totalDays) {
+        const grid = document.getElementById("grid");
+        grid.innerHTML = "";
+        for (let i = 1; i <= totalDays; i++) {
+          const div = document.createElement("div");
+          div.classList.add("box");
+          grid.appendChild(div);
+        }
+      }
 
-function update() {
-  const now = new Date();
-  const year = now.getFullYear();
-  const totalDays = isLeapYear(year) ? 366 : 365;
-  const day = getDayOfYear(now);
+      let currentGridYear = null;
 
-  if (currentGridYear !== year) {
-    buildGrid(totalDays);
-    currentGridYear = year;
-  }
+      function update() {
+        const now = new Date();
+        const year = now.getFullYear();
+        const totalDays = isLeapYear(year) ? 366 : 365;
+        const day = getDayOfYear(now);
 
-  document.getElementById("dayText").innerText =
-    `DAY ${day} / ${totalDays}`;
+        if (currentGridYear !== year) {
+          buildGrid(totalDays);
+          currentGridYear = year;
+        }
 
-  document.getElementById("yearLabel").innerText =
-    `SYSTEM YEAR ${year}`;
+        document.getElementById("dayText").innerText =
+          `DAY ${day} / ${totalDays}`;
 
-  const boxes = document.querySelectorAll(".box");
-  boxes.forEach((box, index) => {
-    box.classList.remove("active", "today");
-    if (index + 1 < day) box.classList.add("active");
-    if (index + 1 === day) box.classList.add("today");
-  });
+        document.getElementById("yearLabel").innerText = `SYSTEM YEAR ${year}`;
 
-  const nextYear = year + 1;
-  const target = new Date(`January 1, ${nextYear} 00:00:00`);
-  const diff = target - now;
+        const boxes = document.querySelectorAll(".box");
+        boxes.forEach((box, index) => {
+          box.classList.remove("active", "today");
+          if (index + 1 < day) box.classList.add("active");
+          if (index + 1 === day) box.classList.add("today");
+        });
 
-  const d = Math.floor(diff / (1000 * 60 * 60 * 24));
-  const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
-  const m = Math.floor((diff / (1000 * 60)) % 60);
-  const s = Math.floor((diff / 1000) % 60);
-  const ms = diff % 1000;
+        const nextYear = year + 1;
+        const target = new Date(`January 1, ${nextYear} 00:00:00`);
+        const diff = target - now;
 
-  document.getElementById("timer").innerText =
-    `${pad(d,3)}:${pad(h,2)}:${pad(m,2)}:${pad(s,2)}`;
+        const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
+        const m = Math.floor((diff / (1000 * 60)) % 60);
+        const s = Math.floor((diff / 1000) % 60);
+        const ms = diff % 1000;
 
-  document.getElementById("milliseconds").innerText =
-    `.${pad(ms,3)}`;
+        document.getElementById("timer").innerText =
+          `${pad(d, 3)}:${pad(h, 2)}:${pad(m, 2)}:${pad(s, 2)}`;
 
-  document.getElementById("countdownLabel").innerText =
-    `COUNTDOWN TO ${nextYear}`;
-}
+        document.getElementById("milliseconds").innerText = `.${pad(ms, 3)}`;
 
-function animate() {
-  update();
-  requestAnimationFrame(animate);
-}
+        document.getElementById("countdownLabel").innerText =
+          `COUNTDOWN TO ${nextYear}`;
+      }
 
-animate();
-</script>
+      function animate() {
+        update();
+        requestAnimationFrame(animate);
+      }
 
-</body>
+      animate();
+
+      const bar = document.getElementById("day-bar");
+
+      // Initialize 24 segments
+      for (let i = 0; i < 24; i++) {
+        const seg = document.createElement("div");
+        seg.className = "hour-slot";
+
+        const fill = document.createElement("div");
+        fill.className = "hour-slot-fill";
+
+        seg.appendChild(fill);
+        bar.appendChild(seg);
+      }
+
+      function updateDayProgress() {
+        const now = new Date();
+        const hours = now.getHours();
+        const minutes = now.getMinutes();
+        const seconds = now.getSeconds();
+
+        const fillThisHour = (minutes * 60 + seconds) / 3600;
+
+        const slots = document.querySelectorAll(".hour-slot-fill");
+
+        slots.forEach((slot, idx) => {
+          if (idx < hours) {
+            slot.style.height = "100%";
+          } else if (idx === hours) {
+            slot.style.height = `${fillThisHour * 100}%`;
+          } else {
+            slot.style.height = "0%";
+          }
+        });
+      }
+
+      setInterval(updateDayProgress, 1000);
+      updateDayProgress();
+    </script>
+  </body>
 </html>
