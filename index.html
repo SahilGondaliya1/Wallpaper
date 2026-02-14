@@ -3,92 +3,107 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Year Flow</title>
+<title>Temporal Interface</title>
 
 <style>
 :root {
-  --bg: #0b0620;
+  --bg1: #05010f;
+  --bg2: #0d0225;
+  --neon: #8b5cf6;
+  --neon-soft: rgba(139, 92, 246, 0.4);
+  --today: #00f5ff;
+  --empty: rgba(255,255,255,0.05);
   --text: #ffffff;
-  --muted: #888;
-  --active: #7c5cff;
-  --today: #ffd000;
-  --empty: #1a1435;
+  --muted: rgba(255,255,255,0.5);
 }
 
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family: "Segoe UI", sans-serif;
 }
 
 body {
-  background: var(--bg);
+  background: linear-gradient(-45deg, var(--bg1), var(--bg2), #12003a, #000000);
+  background-size: 400% 400%;
+  animation: bgShift 15s ease infinite;
   color: var(--text);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  padding: 40px 20px;
   text-align: center;
+  overflow-x: hidden;
+}
+
+@keyframes bgShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 h1 {
-  font-size: 2rem;
-  font-weight: 600;
+  font-weight: 500;
+  letter-spacing: 2px;
 }
 
 .sub {
+  margin-top: 8px;
+  font-size: 0.8rem;
   color: var(--muted);
-  margin-top: 6px;
-  font-size: 0.9rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
 }
 
 /* GRID */
 .grid {
   display: grid;
-  grid-template-columns: repeat(31, 14px);
+  grid-template-columns: repeat(31, 12px);
   gap: 8px;
-  margin: 50px 0;
+  margin: 60px 0;
 }
 
 .box {
-  width: 14px;
-  height: 14px;
-  border-radius: 4px;
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
   background: var(--empty);
   transition: all 0.4s ease;
 }
 
 .box.active {
-  background: var(--active);
-  opacity: 0.85;
+  background: var(--neon);
+  box-shadow: 0 0 8px var(--neon-soft);
 }
 
 .box.today {
   background: var(--today);
-  box-shadow: 0 0 20px var(--today);
-  transform: scale(1.4);
+  box-shadow: 0 0 18px var(--today);
+  transform: scale(1.6);
 }
 
 /* BIG TIMER */
 .timer {
-  font-size: clamp(2rem, 6vw, 5rem);
+  font-size: clamp(2.5rem, 7vw, 6rem);
   font-weight: 700;
-  letter-spacing: 2px;
+  letter-spacing: 4px;
+  text-shadow: 0 0 15px var(--neon);
 }
 
 .ms {
   font-size: clamp(1rem, 3vw, 2rem);
-  opacity: 0.6;
-  margin-left: 6px;
+  margin-left: 8px;
+  color: var(--muted);
 }
 
 .label {
+  margin-top: 12px;
+  font-size: 0.8rem;
+  letter-spacing: 2px;
   color: var(--muted);
-  margin-top: 10px;
-  font-size: 0.9rem;
+  text-transform: uppercase;
 }
 </style>
 </head>
@@ -137,17 +152,16 @@ function update() {
   const totalDays = isLeapYear(year) ? 366 : 365;
   const day = getDayOfYear(now);
 
-  // Rebuild grid if year changes
   if (currentGridYear !== year) {
     buildGrid(totalDays);
     currentGridYear = year;
   }
 
   document.getElementById("dayText").innerText =
-    `Day ${day} of ${totalDays}`;
+    `DAY ${day} / ${totalDays}`;
 
   document.getElementById("yearLabel").innerText =
-    `${year} in progress`;
+    `SYSTEM YEAR ${year}`;
 
   const boxes = document.querySelectorAll(".box");
   boxes.forEach((box, index) => {
@@ -156,7 +170,6 @@ function update() {
     if (index + 1 === day) box.classList.add("today");
   });
 
-  // Countdown to next Jan 1 automatically
   const nextYear = year + 1;
   const target = new Date(`January 1, ${nextYear} 00:00:00`);
   const diff = target - now;
@@ -168,13 +181,13 @@ function update() {
   const ms = diff % 1000;
 
   document.getElementById("timer").innerText =
-    `${pad(d,3)}d ${pad(h,2)}h ${pad(m,2)}m ${pad(s,2)}s`;
+    `${pad(d,3)}:${pad(h,2)}:${pad(m,2)}:${pad(s,2)}`;
 
   document.getElementById("milliseconds").innerText =
     `.${pad(ms,3)}`;
 
   document.getElementById("countdownLabel").innerText =
-    `Until January 1, ${nextYear}`;
+    `COUNTDOWN TO ${nextYear}`;
 }
 
 function animate() {
