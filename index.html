@@ -82,13 +82,16 @@
 
       .dock-link img, .add-btn svg {
         width: 24px; height: 24px; object-fit: contain; transition: all 0.3s ease;
-        filter: grayscale(1) opacity(0.5) brightness(1.5); pointer-events: none;
+        /* brightness(0) + invert(1) forces ANY transparent PNG to pure white */
+        filter: brightness(0) invert(1) opacity(0.55); 
+        pointer-events: none;
       }
 
       .dock-link:hover, .add-btn:hover { background: rgba(255, 255, 255, 0.1); transform: scale(1.15); }
       
       .dock-link:hover img, .add-btn:hover svg {
-        filter: grayscale(0) opacity(1) brightness(1) drop-shadow(0 0 8px rgba(255, 255, 255, 0.2));
+        /* Removes the white override to reveal original brand colors */
+        filter: brightness(1) invert(0) opacity(1) drop-shadow(0 0 8px rgba(255, 255, 255, 0.2));
       }
 
       /* Hover Delete Button */
