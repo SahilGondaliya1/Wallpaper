@@ -237,9 +237,14 @@
           a.className = "dock-link";
           a.draggable = true;
 
-          // Build Link Contents
+          // Extract domain safely for the fallback
+          let domain = "";
+          try { domain = new URL(bm.url).hostname; } catch(e) {}
+
+          // Build Link Contents (with an automatic fallback if the main icon fails)
           a.innerHTML = `
-            <img src="${bm.icon}" alt="${bm.name}">
+            <img src="${bm.icon}" alt="${bm.name}" 
+                 onerror="this.onerror=null; this.src='https://icon.horse/icon/${domain}';">
             <span>${bm.name}</span>
           `;
 
@@ -324,7 +329,7 @@
         modalOverlay.classList.remove('active');
       }
 
-      function saveBookmark() {
+     function saveBookmark() {
         const name = document.getElementById('bm-name').value.trim();
         let url = document.getElementById('bm-url').value.trim();
 
@@ -336,7 +341,9 @@
 
         try {
           const domain = new URL(url).hostname;
-          const iconUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
+          
+          // DuckDuckGo's API is significantly more reliable for fetching favicons than Google's
+          const iconUrl = `https://icons.duckduckgo.com/ip3/${domain}.ico`;
           
           bookmarks.push({ name, url, icon: iconUrl });
           localStorage.setItem('temporal_bookmarks', JSON.stringify(bookmarks));
@@ -347,7 +354,6 @@
           alert("Please enter a valid URL.");
         }
       }
-
       renderDock();
 
       // --- Core Wallpaper Logic ---
