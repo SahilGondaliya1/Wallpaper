@@ -233,21 +233,32 @@
       function renderDock() {
         dockContainer.innerHTML = '';
 
-        bookmarks.forEach((bm, index) => {
+       bookmarks.forEach((bm, index) => {
           const a = document.createElement('a');
           a.href = bm.url;
           a.target = "_blank";
           a.className = "dock-link";
           a.draggable = true;
 
-          // Extract domain safely for the fallback
+          // Extract domain and brand name from the URL dynamically
           let domain = "";
-          try { domain = new URL(bm.url).hostname; } catch(e) {}
+          let brand = "";
+          try { 
+            domain = new URL(bm.url).hostname.replace('www.', '');
+            brand = domain.split('.')[0]; // Gets 'github' from 'github.com'
+          } catch(e) {}
 
-          // Build Link Contents (with an automatic fallback if the main icon fails)
+          // 1st Try: Perfect Vector SVG
+          const svgIcon = `https://cdn.simpleicons.org/${brand}`;
+          // 2nd Try: High-res transparent logo API
+          const clearbitIcon = `https://logo.clearbit.com/${domain}`;
+          // 3rd Try: Clean generated letter block
+          const fallbackIcon = `https://icon.horse/icon/${domain}`;
+
+          // Build Link Contents (with the automatic 3-tier fallback)
           a.innerHTML = `
-            <img src="${bm.icon}" alt="${bm.name}" 
-                 onerror="this.onerror=null; this.src='https://icon.horse/icon/${domain}';">
+            <img src="${svgIcon}" alt="${bm.name}" 
+                 onerror="this.onerror=function(){ this.onerror=null; this.src='${fallbackIcon}'; }; this.src='${clearbitIcon}';">
             <span>${bm.name}</span>
           `;
 
@@ -309,7 +320,7 @@
 
           dockContainer.appendChild(a);
         });
-
+        
         // Append Add Button
         const addBtn = document.createElement('button');
         addBtn.className = "add-btn";
