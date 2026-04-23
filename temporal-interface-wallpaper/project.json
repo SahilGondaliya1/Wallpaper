@@ -1,0 +1,15 @@
+{
+  "title": "Moment Counts",
+  "description": "Minimal ambient time interface as live wallpaper.",
+  "type": "web",
+  "file": "index.html",
+  "general": {
+    "properties": {
+      "schemecolor": {
+        "text": "Accent Color",
+        "type": "color",
+        "value": "ffffff"
+      }
+    }
+  }
+}
